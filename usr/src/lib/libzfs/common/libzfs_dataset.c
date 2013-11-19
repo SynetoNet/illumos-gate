@@ -1215,12 +1215,9 @@ badlabel:
 			switch (prop) {
 			case ZFS_PROP_REFRESERVATION:
 				if (intval > max_required_refreservation) {
-					zfs_error_aux(hdl, dgettext(TEXT_DOMAIN,
-					    "'%s' is greater than current "
-					    "maximum required refreservation '%lld'"), propname, max_required_refreservation);
-					(void) zfs_error(hdl, EZFS_BADPROP,
-					    errbuf);
-					goto error;
+					(void) fprintf(stderr,
+					    "WARNING: '%s' is greater than current "
+					    "maximum calculated refreservation '%lld'\n", propname, max_required_refreservation);
 				}
 				break;
 
