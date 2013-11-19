@@ -32,17 +32,28 @@
 #pragma ident	"%Z%%M%	%I%	%E% SMI"
 
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <userdefs.h>
 #include <errno.h>
 #include <strings.h>
+#include <string.h>
+#include <sys/mnttab.h>
+#include <sys/mntent.h>
+#include <limits.h>
+#include <libgen.h>
 #include "messages.h"
 
 #define 	SBUFSZ	256
+#define	EXPORTDIR	"/export"
 
 extern int rm_homedir();
 
 static char cmdbuf[ SBUFSZ ];	/* buffer for system call */
+static char dhome[ PATH_MAX + 1 ]; /* buffer for dirname */
+static char bhome[ PATH_MAX + 1 ]; /* buffer for basename */
+static char parentdir[ PATH_MAX + 1 ]; /* buffer for parent */
 
 /*
 	Create a home directory and populate with files from skeleton
@@ -55,9 +66,59 @@ create_home(char *homedir, char *skeldir, uid_t uid, gid_t gid)
 		/* uid of new user */
 		/* group id of new user */
 {
-	if( mkdir(homedir, 0775) != 0 ) {
-		errmsg(M_OOPS, "create the home directory", strerror(errno));
+	struct stat stbuf;
+	FILE *fp;
+	char *dname, *bname;
+	char *exportdir = "";
+	char *dataset = NULL;
+
+	(void) strcpy( dhome, homedir );
+	(void) strcpy( bhome, homedir );
+	dname = dirname( dhome );
+	bname = basename( bhome );
+
+	if(( stat(dname, &stbuf) == 0 ) && S_ISDIR(stbuf.st_mode) &&
+		( strcmp(stbuf.st_fstype, MNTTYPE_AUTOFS) == 0 ))
+		exportdir = EXPORTDIR;
+
+	(void) strcpy( parentdir, exportdir );
+	(void) strlcat( parentdir, dname, PATH_MAX + 1 );
+
+	if(( stat(parentdir, &stbuf) != 0 ) || !S_ISDIR(stbuf.st_mode) ) {
+		errmsg(M_OOPS, "access the parent directory", strerror(errno));
 		return( EX_HOMEDIR );
+	}
+
+	if(( strcmp(stbuf.st_fstype, MNTTYPE_ZFS) == 0 ) &&
+		(( fp = fopen(MNTTAB, "r") ) != NULL )) {
+		struct mnttab entry;
+
+		while( getmntent(fp, &entry) == 0 ) {
+			if( strcmp(parentdir, entry.mnt_mountp) == 0 ) {
+				if( strcmp(entry.mnt_fstype, MNTTYPE_ZFS) == 0 )
+					dataset = entry.mnt_special;
+				break;
+			}
+		}
+
+		(void) fclose(fp);
+	}
+
+	if( dataset != NULL ) {
+		(void) sprintf( cmdbuf, "/usr/sbin/zfs create %s/%s", dataset,
+			bname );
+		if( system( cmdbuf ) != 0 ) {
+			errmsg(M_OOPS, "create the home directory",
+			    strerror(errno));
+			return( EX_HOMEDIR );
+		}
+		(void) chmod( homedir, 0775 );
+	} else {
+		if( mkdir(homedir, 0775) != 0 ) {
+			errmsg(M_OOPS, "create the home directory",
+			    strerror(errno));
+			return( EX_HOMEDIR );
+		}
 	}
 
 	if( chown(homedir, uid, gid) != 0 ) {
