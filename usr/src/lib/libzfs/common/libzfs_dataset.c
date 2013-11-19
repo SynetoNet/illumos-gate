@@ -4502,3 +4502,30 @@ zvol_volsize_to_reservation(uint64_t volsize, nvlist_t *props)
 	volsize += numdb;
 	return (volsize);
 }
+
+uint64_t
+compute_refreservation_from_volsize(uint64_t volsize, int ncopies, uint64_t volblocksize)
+{
+	uint64_t numdb;
+	uint64_t nblocks;
+
+	nblocks = volsize/volblocksize;
+	/* start with metadnode L0-L6 */
+	numdb = 7;
+	/* calculate number of indirects */
+	while (nblocks > 1) {
+		nblocks += DNODES_PER_LEVEL - 1;
+		nblocks /= DNODES_PER_LEVEL;
+		numdb += nblocks;
+	}
+	numdb *= MIN(SPA_DVAS_PER_BP, ncopies + 1);
+	volsize *= ncopies;
+	/*
+	 * this is exactly DN_MAX_INDBLKSHIFT when metadata isn't
+	 * compressed, but in practice they compress down to about
+	 * 1100 bytes
+	 */
+	numdb *= 1ULL << DN_MAX_INDBLKSHIFT;
+	volsize += numdb;
+	return (volsize);
+}
