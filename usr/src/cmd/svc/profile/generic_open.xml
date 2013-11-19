@@ -83,7 +83,7 @@
     <instance name='default' enabled='true'/>
   </service>
   <service name='system/system-log' version='1' type='service'>
-    <instance name='default' enabled='true'/>
+    <instance name='default' enabled='false'/>
   </service>
   <service name='system/utmp' version='1' type='service'>
     <instance name='default' enabled='true'/>
