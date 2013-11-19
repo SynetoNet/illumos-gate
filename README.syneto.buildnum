@@ -1,0 +1,6 @@
+Edit this file and write changeset of tip from syneto branch. Then compile and publish.
+	usr/src/uts/common/os/logsubr.c
+	* TODO: Automate this for every build, so we do not have to update it manually.
+
+Edit this file and write new release build number by changing ONNV_BUILDNUM:
+	illumos.sh
