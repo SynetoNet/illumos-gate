@@ -18,10 +18,10 @@ all: $(IPS_REPO_DIR) update_build_script
 	if /opt/onbld/bin/nightly -n ./illumos-local.sh; then \
 		rm -rf $(IPS_REPO_DIR).orig; \
 	else \
-		@echo "Cleaning up after failure"
+		echo "Cleaning up after failure"; \
 		rm -rf $(IPS_REPO_DIR); \
 		mv $(IPS_REPO_DIR).orig $(IPS_REPO_DIR); \
-	fi; \
+	fi
 
 update_build_script:
 	@echo "Updating build script $(BUILD_SCRIPT)"
