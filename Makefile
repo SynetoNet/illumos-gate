@@ -14,14 +14,14 @@ SED=/usr/bin/sed
 
 all: $(IPS_REPO_DIR) update_build_script
 	@echo "Making all on branch $(BRANCH)"
-	if sudo /opt/onbld/bin/nightly -n ./illumos-local.sh; then \
+	chown -R admin:root $(WORKING_DIR)
+	if /opt/onbld/bin/nightly -n ./illumos-local.sh; then \
 		rm -rf $(IPS_REPO_DIR).orig; \
-		exit 0; \
 	else \
 		@echo "Cleaning up after failure"
 		rm -rf $(IPS_REPO_DIR); \
 		mv $(IPS_REPO_DIR).orig $(IPS_REPO_DIR); \
-		exit 1; \
+		$(error /opt/onbld/bin/nightly -n ./illumos-local.sh has failed)
 	fi; \
 
 update_build_script:
