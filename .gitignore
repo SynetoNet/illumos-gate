@@ -2,6 +2,8 @@
 # Note: this does not try to ignore all files in a fully built workspace.
 # Rather, you are expected to "make clobber" before running "git status".
 .make.state*
+illumos-local.sh
+.idea
 /log
 /packages
 /proto
