@@ -4,6 +4,7 @@
 .make.state*
 illumos-local.sh
 .idea
+nbproject
 /log
 /packages
 /proto

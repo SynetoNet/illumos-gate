@@ -32,5 +32,6 @@ update_build_script:
 $(IPS_REPO_DIR):
 	@echo "Creating ips repo dir $(IPS_REPO_DIR)"
 	mkdir -p $(IPS_REPO_DIR)
+	chown admin:staff $(IPS_REPO_DIR)
 #Save original repository in case build fails -> we want a sane pkg repo always
 	mv $(IPS_REPO_DIR) $(IPS_REPO_DIR).orig
