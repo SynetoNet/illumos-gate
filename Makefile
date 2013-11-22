@@ -14,7 +14,7 @@ SED=/usr/bin/sed
 
 all: $(IPS_REPO_DIR) update_build_script
 	@echo "Making all on branch $(BRANCH)"
-	if /opt/onbld/bin/nightly -n ./illumos-local.sh; then \
+	if sudo /opt/onbld/bin/nightly -n ./illumos-local.sh; then \
 		rm -rf $(IPS_REPO_DIR).orig; \
 	else \
 		rm -rf $(IPS_REPO_DIR); \
@@ -23,7 +23,6 @@ all: $(IPS_REPO_DIR) update_build_script
 
 update_build_script:
 	@echo "Updating build script $(BUILD_SCRIPT)"
-	@echo $(WORKING_DIR)
 	$(SED) -e "s@^export CODEMGR_WS=.*@export CODEMGR_WS=$(WORKING_DIR)@" \
 	 -e "s@^export PKGARCHIVE=.*@export PKGARCHIVE=$(IPS_REPO_DIR)@" \
 	 ./illumos.sh > ./illumos-local.sh
