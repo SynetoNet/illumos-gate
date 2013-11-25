@@ -2,7 +2,6 @@
 # Note: this does not try to ignore all files in a fully built workspace.
 # Rather, you are expected to "make clobber" before running "git status".
 .make.state*
-illumos-local.sh
 .idea
 nbproject
 /log
@@ -21,3 +20,8 @@ nbproject
 /usr/src/noise-*.ref
 /usr/src/tools/clobber-*.out
 /usr/src/tools/install-*.out
+# Ignore build products and closed bins
+illumos-local.sh
+on-closed-bins-nd.i386.tar.bz2
+on-closed-bins.i386.tar.bz2
+closed/

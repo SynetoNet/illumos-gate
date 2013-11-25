@@ -1,26 +1,30 @@
 SOURCE_DIR=
 PARBUILD=-j10
 BRANCH=syneto
-IPS_REPO_DIR=/tank/build/repos/illumos-syneto/$(BRANCH)
-
+BUILD_SCRIPT=./illumos.sh
 WORKING_DIR=$(shell pwd)
+DOWNLOAD_URL=http://devel.dev.syneto.net/GPL-Sources/system-storage
+IPSDIR=/tank/build/repos/illumos-syneto/$(BRANCH)
 IPSFS=$WORKING_DIR/packages
 
+# Tools
+SED=/usr/gnu/bin/sed
 ZFS=/usr/sbin/zfs
-BUILD_SCRIPT=./illumos.sh
-SED=/usr/bin/sed
+WGET=/usr/bin/wget
+TAR=/usr/gnu/bin/tar
 
-.PHONY: $(IPS_REPO_DIR) all
+.PHONY: $(IPSDIR) all
 
-all: $(IPS_REPO_DIR) update_build_script
+all: $(IPSDIR) setup_build_env setup_closed_binaries update_build_script
 	@echo "Making all on branch $(BRANCH)"
 	chown admin:staff $(WORKING_DIR)
-	if /opt/onbld/bin/nightly ./illumos-local.sh; then \
-		rm -rf $(IPS_REPO_DIR).orig; \
+	if /opt/onbld/bin/nightly -n ./illumos-local.sh; then \
+		rm -rf $(IPSDIR).orig; \
 	else \
 		echo "Cleaning up after failure"; \
-		rm -rf $(IPS_REPO_DIR); \
-		mv $(IPS_REPO_DIR).orig $(IPS_REPO_DIR); \
+		rm -rf $(IPSDIR); \
+		mv $(IPSDIR).orig $(IPSDIR); \
+		echo "Build has failed. Please check log/$(ls log| sort -r | head -n1)/nightly.log for more details"; \
 		exit 1; \
 	fi
 
@@ -29,9 +33,25 @@ update_build_script:
 	$(SED) -e "s@^export CODEMGR_WS=.*@export CODEMGR_WS=$(WORKING_DIR)@" \
 	 ./illumos.sh > ./illumos-local.sh
 
-$(IPS_REPO_DIR):
-	@echo "Creating ips repo dir $(IPS_REPO_DIR)"
-	mkdir -p $(IPS_REPO_DIR)
-	chown admin:staff $(IPS_REPO_DIR)
+$(IPSDIR):
+	@echo "Creating ips repo dir $(IPSDIR)"
+	mkdir -p $(IPSDIR)
+	chown admin:staff $(IPSDIR)
 #Save original repository in case build fails -> we want a sane pkg repo always
-	mv $(IPS_REPO_DIR) $(IPS_REPO_DIR).orig
+	mv $(IPSDIR) $(IPSDIR).orig
+
+setup_build_env:
+	@echo "Setting up build environment ..."
+	ln -s usr/src/tools/scripts/bldenv.sh .
+	ksh93 bldenv.sh -d illumos.sh -c "cd usr/src && dmake setup"
+
+setup_closed_binaries: download_closed_binaries
+	if [ ! -d closed ]; then \
+		@echo "Setting up illumos closed binaries ..."; \
+		$(TAR) xvpf on-closed-bins.i386.tar.bz2 ; \
+        $(TAR) xvpf on-closed-bins-nd.i386.tar.bz2 ; \
+	fi
+
+download_closed_binaries:
+	$(WGET) -q -nc $(DOWNLOAD_URL)/on-closed-bins-nd.i386.tar.bz2
+	$(WGET) -q -nc $(DOWNLOAD_URL)/on-closed-bins.i386.tar.bz2
