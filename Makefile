@@ -26,7 +26,6 @@ all: $(IPS_REPO_DIR) update_build_script
 update_build_script:
 	@echo "Updating build script $(BUILD_SCRIPT)"
 	$(SED) -e "s@^export CODEMGR_WS=.*@export CODEMGR_WS=$(WORKING_DIR)@" \
-	 -e "s@^export PKGARCHIVE=.*@export PKGARCHIVE=$(IPS_REPO_DIR)@" \
 	 ./illumos.sh > ./illumos-local.sh
 
 $(IPS_REPO_DIR):
