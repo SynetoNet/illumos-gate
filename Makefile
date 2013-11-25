@@ -15,12 +15,13 @@ SED=/usr/bin/sed
 all: $(IPS_REPO_DIR) update_build_script
 	@echo "Making all on branch $(BRANCH)"
 	chown admin:staff $(WORKING_DIR)
-	if /opt/onbld/bin/nightly -n ./illumos-local.sh; then \
+	if /opt/onbld/bin/nightly ./illumos-local.sh; then \
 		rm -rf $(IPS_REPO_DIR).orig; \
 	else \
 		echo "Cleaning up after failure"; \
 		rm -rf $(IPS_REPO_DIR); \
 		mv $(IPS_REPO_DIR).orig $(IPS_REPO_DIR); \
+		exit 1; \
 	fi
 
 update_build_script:
