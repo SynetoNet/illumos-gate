@@ -42,7 +42,9 @@ $(IPSDIR):
 
 setup_build_env: update_build_script
 	@echo "Setting up build environment ..."
-	ln -s usr/src/tools/scripts/bldenv.sh .
+	if [ ! -L ./bldenv.sh ]; then \
+		ln -s usr/src/tools/scripts/bldenv.sh . ; \
+	fi
 	ksh93 bldenv.sh -d $(BUILD_SCRIPT) -c "cd usr/src && dmake setup"
 
 setup_closed_binaries: download_closed_binaries
