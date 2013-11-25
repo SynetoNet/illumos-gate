@@ -40,12 +40,12 @@ $(IPSDIR):
 #Save original repository in case build fails -> we want a sane pkg repo always
 	mv $(IPSDIR) $(IPSDIR).orig
 
-setup_build_env: update_build_script
+setup_build_env: setup_closed_binaries update_build_script
 	@echo "Setting up build environment ..."
 	if [ ! -L ./bldenv.sh ]; then \
 		ln -s usr/src/tools/scripts/bldenv.sh . ; \
 	fi
-	MAKE=/usr/gnu/bin/make ksh93 bldenv.sh -d $(BUILD_SCRIPT) -c "cd usr/src && dmake setup"
+	MAKE=/usr/bin/make ksh93 bldenv.sh -d $(BUILD_SCRIPT) -c "cd usr/src && dmake setup"
 
 setup_closed_binaries: download_closed_binaries
 	if [ ! -d closed ]; then \
