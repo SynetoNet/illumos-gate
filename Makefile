@@ -45,7 +45,7 @@ setup_build_env: update_build_script
 	if [ ! -L ./bldenv.sh ]; then \
 		ln -s usr/src/tools/scripts/bldenv.sh . ; \
 	fi
-	ksh93 MAKE=/usr/gnu/bin/make bldenv.sh -d $(BUILD_SCRIPT) -c "cd usr/src && dmake setup"
+	MAKE=/usr/gnu/bin/make ksh93 bldenv.sh -d $(BUILD_SCRIPT) -c "cd usr/src && dmake setup"
 
 setup_closed_binaries: download_closed_binaries
 	if [ ! -d closed ]; then \
