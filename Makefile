@@ -1,7 +1,7 @@
 SOURCE_DIR=
 PARBUILD=-j10
 BRANCH=syneto
-BUILD_SCRIPT=./illumos.sh
+BUILD_SCRIPT=./illumos-local.sh
 WORKING_DIR=$(shell pwd)
 DOWNLOAD_URL=http://devel.dev.syneto.net/GPL-Sources/system-storage
 IPSDIR=/tank/build/repos/illumos-syneto/$(BRANCH)
@@ -15,7 +15,7 @@ TAR=/usr/gnu/bin/tar
 
 .PHONY: $(IPSDIR) all
 
-all: $(IPSDIR) setup_build_env setup_closed_binaries update_build_script
+all: $(IPSDIR) setup_build_env setup_closed_binaries
 	@echo "Making all on branch $(BRANCH)"
 	chown admin:staff $(WORKING_DIR)
 	if /opt/onbld/bin/nightly -n ./illumos-local.sh; then \
@@ -29,9 +29,9 @@ all: $(IPSDIR) setup_build_env setup_closed_binaries update_build_script
 	fi
 
 update_build_script:
-	@echo "Updating build script $(BUILD_SCRIPT)"
+	@echo "Generating new build script $(BUILD_SCRIPT)"
 	$(SED) -e "s@^export CODEMGR_WS=.*@export CODEMGR_WS=$(WORKING_DIR)@" \
-	 ./illumos.sh > ./illumos-local.sh
+	 ./illumos.sh > $(BUILD_SCRIPT)
 
 $(IPSDIR):
 	@echo "Creating ips repo dir $(IPSDIR)"
@@ -40,10 +40,10 @@ $(IPSDIR):
 #Save original repository in case build fails -> we want a sane pkg repo always
 	mv $(IPSDIR) $(IPSDIR).orig
 
-setup_build_env:
+setup_build_env: update_build_script
 	@echo "Setting up build environment ..."
 	ln -s usr/src/tools/scripts/bldenv.sh .
-	ksh93 bldenv.sh -d illumos.sh -c "cd usr/src && dmake setup"
+	ksh93 bldenv.sh -d $(BUILD_SCRIPT) -c "cd usr/src && dmake setup"
 
 setup_closed_binaries: download_closed_binaries
 	if [ ! -d closed ]; then \
