@@ -60,3 +60,4 @@ setup_closed_binaries: download_closed_binaries
 download_closed_binaries:
 	$(WGET) -q -nc $(DOWNLOAD_URL)/on-closed-bins-nd.i386.tar.bz2
 	$(WGET) -q -nc $(DOWNLOAD_URL)/on-closed-bins.i386.tar.bz2
+
