@@ -30,7 +30,8 @@ all: $(IPSDIR) setup_build_env setup_closed_binaries
 update_build_script:
 	@echo "Generating new build script $(BUILD_SCRIPT)"
 	$(SED) -e "s@^export CODEMGR_WS=.*@export CODEMGR_WS=$(WORKING_DIR)@" \
-		-e "s@^export PKGARCHIVE=.*@export PKGARCHIVE=$(IPSDIR)@" \
+# Enable this line when changing the IPS dir where the packages are published
+#		-e "s@^export PKGARCHIVE=.*@export PKGARCHIVE=$(IPSDIR)@" \
 		./illumos.sh > $(BUILD_SCRIPT)
 
 $(IPSDIR):
