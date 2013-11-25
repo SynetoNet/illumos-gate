@@ -4,8 +4,7 @@ BRANCH=syneto
 BUILD_SCRIPT=./illumos-local.sh
 WORKING_DIR=$(shell pwd)
 DOWNLOAD_URL=http://devel.dev.syneto.net/GPL-Sources/system-storage
-IPSDIR=/tank/build/repos/illumos-syneto/$(BRANCH)
-IPSFS=$WORKING_DIR/packages
+IPSDIR=/tank/storage-os/pkg-repos/illumos-syneto/$(BRANCH)
 
 # Tools
 SED=/usr/gnu/bin/sed
@@ -18,7 +17,7 @@ TAR=/usr/gnu/bin/tar
 all: $(IPSDIR) setup_build_env setup_closed_binaries
 	@echo "Making all on branch $(BRANCH)"
 	chown admin:staff $(WORKING_DIR)
-	if /opt/onbld/bin/nightly -n ./illumos-local.sh; then \
+	if /opt/onbld/bin/nightly -n $(BUILD_SCRIPT); then \
 		rm -rf $(IPSDIR).orig; \
 	else \
 		echo "Cleaning up after failure"; \
@@ -31,7 +30,8 @@ all: $(IPSDIR) setup_build_env setup_closed_binaries
 update_build_script:
 	@echo "Generating new build script $(BUILD_SCRIPT)"
 	$(SED) -e "s@^export CODEMGR_WS=.*@export CODEMGR_WS=$(WORKING_DIR)@" \
-	 ./illumos.sh > $(BUILD_SCRIPT)
+		-e "s@^export PKGARCHIVE=.*@export PKGARCHIVE=$(IPSDIR)@" \
+		./illumos.sh > $(BUILD_SCRIPT)
 
 $(IPSDIR):
 	@echo "Creating ips repo dir $(IPSDIR)"
@@ -45,7 +45,10 @@ setup_build_env: setup_closed_binaries update_build_script
 	if [ ! -L ./bldenv.sh ]; then \
 		ln -s usr/src/tools/scripts/bldenv.sh . ; \
 	fi
-	MAKE=/usr/bin/make ksh93 bldenv.sh -d $(BUILD_SCRIPT) -c "cd usr/src && dmake setup"
+	if [ ! -e .setup ]; then \
+		MAKE=/usr/bin/make ksh93 bldenv.sh -d $(BUILD_SCRIPT) -c "cd usr/src && dmake setup"; \
+		touch .setup; \
+	fi
 
 setup_closed_binaries: download_closed_binaries
 	if [ ! -d closed ]; then \

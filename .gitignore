@@ -26,3 +26,4 @@ on-closed-bins-nd.i386.tar.bz2
 on-closed-bins.i386.tar.bz2
 closed/
 bldenv.sh
+.setup

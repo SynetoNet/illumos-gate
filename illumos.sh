@@ -58,7 +58,7 @@ export NIGHTLY_OPTIONS='-nCmprt'
 export GATE=syneto_storage_os_2_13
 
 # CODEMGR_WS - where is your workspace at (or what should nightly name it)
-export CODEMGR_WS=/code/storage-os
+export CODEMGR_WS=
 
 # Maximum number of dmake jobs.  The recommended number is 2 + NCPUS,
 # where NCPUS is the number of logical CPUs on your build system.
