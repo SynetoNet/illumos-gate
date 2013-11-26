@@ -1,6 +1,7 @@
 SOURCE_DIR=
 PARBUILD=-j10
 BRANCH=syneto
+CHANGESET=
 BUILD_SCRIPT=./illumos-local.sh
 WORKING_DIR=$(shell pwd)
 DOWNLOAD_URL=http://devel.dev.syneto.net/GPL-Sources/system-storage
@@ -16,6 +17,8 @@ TAR=/usr/gnu/bin/tar
 
 all: $(IPSDIR) setup_build_env setup_closed_binaries
 	@echo "Making all on branch $(BRANCH)"
+	@echo "Changeset is $(CHANGESET)"
+	exit 0
 	chown admin:staff $(WORKING_DIR)
 	if /opt/onbld/bin/nightly -n $(BUILD_SCRIPT); then \
 		rm -rf $(IPSDIR).orig; \
@@ -52,7 +55,7 @@ setup_build_env: setup_closed_binaries update_build_script
 
 setup_closed_binaries: download_closed_binaries
 	if [ ! -d closed ]; then \
-		@echo "Setting up illumos closed binaries ..."; \
+		echo "Setting up illumos closed binaries ..."; \
 		$(TAR) xvpf on-closed-bins.i386.tar.bz2 ; \
         $(TAR) xvpf on-closed-bins-nd.i386.tar.bz2 ; \
 	fi
