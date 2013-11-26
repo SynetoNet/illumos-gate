@@ -6,6 +6,7 @@ BUILD_SCRIPT=./illumos-local.sh
 WORKING_DIR=$(shell pwd)
 DOWNLOAD_URL=http://devel.dev.syneto.net/GPL-Sources/system-storage
 IPSDIR=/tank/storage-os/pkg-repos/illumos-syneto/$(BRANCH)
+SHORT_CHANGESET=$(shell echo "$(CHANGESET)" | cut -c 1-7)
 
 # Tools
 SED=/usr/gnu/bin/sed
@@ -16,9 +17,7 @@ TAR=/usr/gnu/bin/tar
 .PHONY: $(IPSDIR) all
 
 all: $(IPSDIR) setup_build_env setup_closed_binaries
-	@echo "Making all on branch $(BRANCH)"
-	@echo "Changeset is $(CHANGESET)"
-	exit 0
+	@echo "Making all on branch $(BRANCH) using $(CHANGESET)"
 	chown admin:staff $(WORKING_DIR)
 	if /opt/onbld/bin/nightly -n $(BUILD_SCRIPT); then \
 		rm -rf $(IPSDIR).orig; \
@@ -34,6 +33,7 @@ update_build_script:
 	@echo "Generating new build script $(BUILD_SCRIPT)"
 	$(SED) -e "s@^export CODEMGR_WS=.*@export CODEMGR_WS=$(WORKING_DIR)@" \
 		-e "s@^export PKGARCHIVE=.*@export PKGARCHIVE=$(IPSDIR)@" \
+		-e "s@^export GATE=.*@export GATE=syneto_$(SHORT_CHANGESET)@" \
 		./illumos.sh > $(BUILD_SCRIPT)
 
 $(IPSDIR):

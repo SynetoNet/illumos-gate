@@ -55,7 +55,7 @@ export NIGHTLY_OPTIONS='-nCmprt'
 
 # This is a variable for the rest of the script - GATE doesn't matter to
 # nightly itself
-export GATE=syneto_storage_os_2_13
+export GATE=
 
 # CODEMGR_WS - where is your workspace at (or what should nightly name it)
 export CODEMGR_WS=

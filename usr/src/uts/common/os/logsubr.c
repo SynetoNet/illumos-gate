@@ -246,11 +246,9 @@ log_init(void)
 	/*
 	 * Now that logging is enabled, emit the SunOS banner.
 	 */
-	printf("\rSyneto Storage Build %s %u-bit\n",
-	    utsname.version, NBBY * (uint_t)sizeof (void *));
-	printf("SunOS Release %s - Copyright 1983-2010 Oracle and/or its "
-	    "affiliates.\n", utsname.release);
-	printf("All rights reserved. Use is subject to license terms.\n");
+	printf("\rSunOS Release %s Version %s %u-bit\n",
+		utsname.release, utsname.version, NBBY * (uint_t)sizeof (void *));
+	printf("Copyright (c) 2010-2013, Syneto All rights reserved.\n");
 
 #ifdef DEBUG
 	printf("DEBUG enabled\n");
