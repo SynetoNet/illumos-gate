@@ -7,6 +7,7 @@ WORKING_DIR=$(shell pwd)
 DOWNLOAD_URL=http://devel.dev.syneto.net/GPL-Sources/system-storage
 IPSDIR=/tank/storage-os/pkg-repos/illumos-syneto/$(BRANCH)
 SHORT_CHANGESET=$(shell echo "$(CHANGESET)" | cut -c 1-7)
+ONNV_VERSION=$(head -n1 VERSION)
 
 # Tools
 SED=/usr/gnu/bin/sed
@@ -34,6 +35,7 @@ update_build_script:
 	$(SED) -e "s@^export CODEMGR_WS=.*@export CODEMGR_WS=$(WORKING_DIR)@" \
 		-e "s@^export PKGARCHIVE=.*@export PKGARCHIVE=$(IPSDIR)@" \
 		-e "s@^export GATE=.*@export GATE=syneto_$(SHORT_CHANGESET)@" \
+		-e "s@^export ONNV_BUILDNUM=.*@export ONNV_BUILDNUM=$(ONNV_VERSION)$(SHORT_CHANGESET)@" \
 		./illumos.sh > $(BUILD_SCRIPT)
 
 $(IPSDIR):
