@@ -21,9 +21,10 @@ nbproject
 /usr/src/tools/clobber-*.out
 /usr/src/tools/install-*.out
 # Ignore build products and closed bins
-illumos-local.sh
+illumos.sh
 on-closed-bins-nd.i386.tar.bz2
 on-closed-bins.i386.tar.bz2
 closed/
 bldenv.sh
+nightly.sh
 .setup
