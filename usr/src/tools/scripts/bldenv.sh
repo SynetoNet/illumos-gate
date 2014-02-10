@@ -248,8 +248,6 @@ BASEWSDIR=$(basename -- "${CODEMGR_WS}")
 DEV_CM="\"@(#)SunOS Internal Development: $LOGNAME $BUILD_DATE [$BASEWSDIR]\""
 export DEV_CM RELEASE_DATE POUND_SIGN
 
-export INTERNAL_RELEASE_BUILD=
-
 print 'Build type   is  \c'
 if ${flags.d} ; then
 	print 'DEBUG'
@@ -273,11 +271,13 @@ if [[ "${SUNWSPRO}" != "" ]]; then
 	export PATH="${SUNWSPRO}/bin:$PATH" 
 fi 
 
-if [[ -x "${MAKE}" ]]; then
-	export PATH="$(dirname -- "${MAKE}"):$PATH"
-else
-	print "\$MAKE points to garbage"
-	exit 1	
+if [[ -n "${MAKE}" ]]; then
+	if [[ -x "${MAKE}" ]]; then
+		export PATH="$(dirname -- "${MAKE}"):$PATH"
+	else
+		print "\$MAKE (${MAKE}) is not a valid executible"
+		exit 1	
+	fi
 fi
 
 TOOLS="${SRC}/tools"
