@@ -30,3 +30,4 @@ nightly.sh
 .setup
 .metadata/
 atlassian-ide-plugin.xml
+.project
